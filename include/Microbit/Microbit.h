@@ -291,13 +291,13 @@ int randint(int32_t min, int32_t max);
 char *constToChars(const char *string);
 
 // Low level delay functions
-void uDelayS(uint32_t s);
-void uDelayM(uint32_t ms);
-void uDelayU(uint32_t us);
+void delayS(uint32_t s);
+void delayM(uint32_t ms);
+void delayU(uint32_t us);
 
 // Pin configuration functions
-void setPinDir(MicrobitPin pin, bool output, bool pullup);
-void uDigitalWrite(MicrobitPin pin, int value);
+void setPin(MicrobitPin pin, bool output, bool pullup);
+void digitalWrite(MicrobitPin pin, int value);
 
 // Serial print functions
 void serialPrint(char *string);

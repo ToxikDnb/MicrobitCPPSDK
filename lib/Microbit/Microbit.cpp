@@ -243,15 +243,15 @@ bufferNode *popImageFromBuffer()
 // DELAYS
 // ####################################################################
 // Delay function in seconds
-void uDelayS(uint32_t s)
+void delayS(uint32_t s)
 {
-    uDelayU(s * 1000000);
+    delayU(s * 1000000);
 }
 
 // Delay function in milliseconds
-void uDelayM(uint32_t ms)
+void delayM(uint32_t ms)
 {
-    uDelayU(ms * 1000);
+    delayU(ms * 1000);
 }
 
 // Timer interrupt handler
@@ -267,7 +267,7 @@ extern "C" void TIMER3_IRQHandler()
 }
 
 // Delay function in microseconds
-void uDelayU(uint32_t us)
+void delayU(uint32_t us)
 {
     // Add current timer delay and position to buffer
     if (DELAY_TIMER->TASKS_START == 1)
@@ -296,7 +296,7 @@ void uDelayU(uint32_t us)
     uint32_t nextDelay = getDelayFromBuffer();
     if (nextDelay != 0)
     {
-        uDelayU(nextDelay);
+        delayU(nextDelay);
     }
 }
 // ####################################################################
@@ -304,7 +304,7 @@ void uDelayU(uint32_t us)
 // GPIO PIN FUNCTIONS
 // ####################################################################
 // Sets the Pin Direction to either INPUT or OUTPUT for the given port and pin
-void setPinDir(MicrobitPin pin, bool output, bool pullup)
+void setPin(MicrobitPin pin, bool output, bool pullup)
 {
     NRF_GPIO_Type *port = (pin >= P1_0) ? NRF_P1 : NRF_P0;
     int pinNumber = (pin >= P1_0) ? (pin - P1_0) : pin;
@@ -319,7 +319,7 @@ void setPinDir(MicrobitPin pin, bool output, bool pullup)
 
 // Sets the value of the given port and pin to either HIGH or LOW
 
-void uDigitalWrite(MicrobitPin pin, int value)
+void digitalWrite(MicrobitPin pin, int value)
 {
     NRF_GPIO_Type *port = (pin >= P1_0) ? NRF_P1 : NRF_P0;
     int pinNumber = (pin >= P1_0) ? (pin - P1_0) : pin;
@@ -336,25 +336,25 @@ void uDigitalWrite(MicrobitPin pin, int value)
 // Print to serial
 void serialPrint(char *string)
 {
-    setPinDir(TX_PIN, true, false);
+    setPin(TX_PIN, true, false);
     while (*string != '\0')
     {
         char current = *string++;
         // Start bit
-        uDigitalWrite(TX_PIN, 0);
-        uDelayU(SERIAL_INTERVAL);
+        digitalWrite(TX_PIN, 0);
+        delayU(SERIAL_INTERVAL);
 
         // Data bits (8 bits, LSB first)
         for (int i = 0; i < 8; i++)
         {
-            uDigitalWrite(TX_PIN, current & 1);
+            digitalWrite(TX_PIN, current & 1);
             current >>= 1;
-            uDelayU(SERIAL_INTERVAL);
+            delayU(SERIAL_INTERVAL);
         }
 
         // Stop bit
-        uDigitalWrite(TX_PIN, 1);
-        uDelayU(SERIAL_INTERVAL);
+        digitalWrite(TX_PIN, 1);
+        delayU(SERIAL_INTERVAL);
     }
 }
 
@@ -410,12 +410,12 @@ void displayRefresh()
         // Set all column pins to HIGH to prevent ghosting
         for (int col = 0; col < DISPLAY_WIDTH; col++)
         {
-            uDigitalWrite(MICROBIT_PINS.pins[col], HIGH);
+            digitalWrite(MICROBIT_PINS.pins[col], HIGH);
         }
 
         // Set the current row pin to high
-        uDigitalWrite(MICROBIT_PINS.pins[row + DISPLAY_WIDTH],
-                      HIGH);
+        digitalWrite(MICROBIT_PINS.pins[row + DISPLAY_WIDTH],
+                     HIGH);
 
         // Scan through available cols
         for (int col = 0; col < DISPLAY_WIDTH; col++)
@@ -423,15 +423,15 @@ void displayRefresh()
             // Get the pixel value
             int value = display[row][col] == 1 ? LOW : HIGH;
             // Set the col pin to the pixel value
-            uDigitalWrite(MICROBIT_PINS.pins[col],
-                              value);
+            digitalWrite(MICROBIT_PINS.pins[col],
+                         value);
         }
 
         // Delay a small amount to allow changes to display
-        uDelayM(1);
+        delayM(1);
         // Set the current row pin back to low
-        uDigitalWrite(MICROBIT_PINS.pins[row + DISPLAY_WIDTH],
-                      LOW);
+        digitalWrite(MICROBIT_PINS.pins[row + DISPLAY_WIDTH],
+                     LOW);
     }
 }
 
@@ -463,7 +463,7 @@ void initialiseDisplay()
 {
     for (int i = 0; i < 10; i++)
     {
-        setPinDir(MICROBIT_PINS.pins[i], OUTPUT, false);
+        setPin(MICROBIT_PINS.pins[i], OUTPUT, false);
     }
     clearDisplay();
     /// Configure the refresh timer
