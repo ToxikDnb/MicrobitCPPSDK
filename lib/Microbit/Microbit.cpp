@@ -405,26 +405,33 @@ void displayRefresh()
         displayImage(currentNode->image);
         free(currentNode);
     }
-    for (int col = 0; col < DISPLAY_WIDTH; col++)
+    for (int row = 0; row < DISPLAY_HEIGHT; row++)
     {
-        // Set the current column pin to LOW
-        uDigitalWrite(MICROBIT_PINS.pins[col],
-                      LOW);
-
-        // Set the row pins based on the display matrix
-        for (int row = 0; row < DISPLAY_HEIGHT; row++)
+        // Set all column pins to HIGH to prevent ghosting
+        for (int col = 0; col < DISPLAY_WIDTH; col++)
         {
-            uDigitalWrite(
-                MICROBIT_PINS.pins[row + DISPLAY_WIDTH],
-                display[row][col]);
+            uDigitalWrite(MICROBIT_PINS.pins[col], HIGH);
         }
 
-        // Small delay to allow the column to be displayed
-        uDelayM(1);
-
-        // Set the current column pin back to HIGH
-        uDigitalWrite(MICROBIT_PINS.pins[col],
+        // Set the current row pin to high
+        uDigitalWrite(MICROBIT_PINS.pins[row + DISPLAY_WIDTH],
                       HIGH);
+
+        // Scan through available cols
+        for (int col = 0; col < DISPLAY_WIDTH; col++)
+        {
+            // Get the pixel value
+            int value = display[row][col] == 1 ? LOW : HIGH;
+            // Set the col pin to the pixel value
+            uDigitalWrite(MICROBIT_PINS.pins[col],
+                              value);
+        }
+
+        // Delay a small amount to allow changes to display
+        uDelayM(1);
+        // Set the current row pin back to low
+        uDigitalWrite(MICROBIT_PINS.pins[row + DISPLAY_WIDTH],
+                      LOW);
     }
 }
 
