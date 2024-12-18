@@ -35,11 +35,13 @@ public:
 class pinMatrixDisplay : public Display
 {
 protected:
-    uint32_t *colPins;
-    uint32_t *rowPins;
+    MicrobitPin *colPins;
+    MicrobitPin *rowPins;
+    uint8_t width;
+    uint8_t height;
 
 public:
-    pinMatrixDisplay();
+    pinMatrixDisplay(MicrobitPin *colPins, MicrobitPin *rowPins, uint8_t width, uint8_t height);
     ~pinMatrixDisplay();
 
     void initialise() override;
