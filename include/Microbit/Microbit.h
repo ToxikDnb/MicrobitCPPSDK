@@ -193,7 +193,7 @@ typedef enum
 
     // Not connected
     NC = (int)0xFFFFFFFF
-} PinName;
+} MicrobitPin;
 
 #define GPIO_MIC_PIN 20
 #define MICROBIT_PIN_INT_SCL P0_08
@@ -206,11 +206,6 @@ typedef enum
 #define DISPLAY_HEIGHT 5
 #define SERIAL_SPEED 9600
 #define SERIAL_INTERVAL (1000000 / SERIAL_SPEED)
-#define GPIO_OFFSET_OUT 0x504
-#define GPIO_OFFSET_IN 0x510
-#define GPIO_OFFSET_DIR 0x514
-#define MS_TO_TICKS(x) ((x) * 16100)
-#define US_TO_TICKS(x) ((x) * 16.1)
 #define REFRESH_RATE 60
 #define REFRESH_INTERVAL_MS 1000 / REFRESH_RATE
 #define REFRESH_INTERVAL_US 1000000 / REFRESH_RATE
@@ -238,29 +233,24 @@ typedef enum
 // Typedefs
 
 // Structs
-typedef struct
-{
-    int port;
-    int pin;
-} microbitPin;
 
 typedef struct
 {
-    microbitPin col1 = {0, 28};
-    microbitPin col2 = {0, 11};
-    microbitPin col3 = {0, 31};
-    microbitPin col4 = {1, 5};
-    microbitPin col5 = {0, 30};
+    MicrobitPin col1 = P0_28;
+    MicrobitPin col2 = P0_11;
+    MicrobitPin col3 = P0_31;
+    MicrobitPin col4 = P1_5;
+    MicrobitPin col5 = P0_30;
 
-    microbitPin row1 = {0, 21};
-    microbitPin row2 = {0, 22};
-    microbitPin row3 = {0, 15};
-    microbitPin row4 = {0, 24};
-    microbitPin row5 = {0, 19};
+    MicrobitPin row1 = P0_21;
+    MicrobitPin row2 = P0_22;
+    MicrobitPin row3 = P0_15;
+    MicrobitPin row4 = P0_24;
+    MicrobitPin row5 = P0_19;
 
-    microbitPin pins[10] = {col1, col2, col3, col4, col5, row1, row2, row3, row4, row5};
+    MicrobitPin pins[10] = {col1, col2, col3, col4, col5, row1, row2, row3, row4, row5};
 
-} MicrobitPins;
+} MicrobitMatrixPins;
 
 // Custom data types
 typedef uint8_t MicrobitDisplay[DISPLAY_HEIGHT][DISPLAY_WIDTH];
@@ -306,8 +296,8 @@ void uDelayM(uint32_t ms);
 void uDelayU(uint32_t us);
 
 // Pin configuration functions
-void setPinDir(int port, int pin, bool output, bool pullup);
-void uDigitalWrite(int port, int pin, int value);
+void setPinDir(MicrobitPin pin, bool output, bool pullup);
+void uDigitalWrite(MicrobitPin pin, int value);
 
 // Serial print functions
 void serialPrint(char *string);

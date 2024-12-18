@@ -25,7 +25,7 @@ MicrobitDisplay display = {{0, 0, 0, 0, 0},
                            {0, 0, 0, 0, 0},
                            {0, 0, 0, 0, 0},
                            {0, 0, 0, 0, 0}};
-const MicrobitPins MICROBIT_PINS;
+const MicrobitMatrixPins MICROBIT_PINS;
 volatile uint32_t *GPIO_0 = (uint32_t *)0x50000000;
 volatile uint32_t *GPIO_1 = (uint32_t *)0x50000300;
 
@@ -304,53 +304,30 @@ void uDelayU(uint32_t us)
 // GPIO PIN FUNCTIONS
 // ####################################################################
 // Sets the Pin Direction to either INPUT or OUTPUT for the given port and pin
-void setPinDir(int port, int pin, bool output, bool pullup)
+void setPinDir(MicrobitPin pin, bool output, bool pullup)
 {
-    if (port == 0)
-    {
-        NRF_P0->PIN_CNF[pin] = (output ? GPIO_PIN_CNF_DIR_Output : GPIO_PIN_CNF_DIR_Input)
+    NRF_GPIO_Type *port = (pin >= P1_0) ? NRF_P1 : NRF_P0;
+    int pinNumber = (pin >= P1_0) ? (pin - P1_0) : pin;
+
+    port->PIN_CNF[pinNumber] = (output ? GPIO_PIN_CNF_DIR_Output : GPIO_PIN_CNF_DIR_Input)
                                    << GPIO_PIN_CNF_DIR_Pos |
                                (pullup ? GPIO_PIN_CNF_PULL_Pullup : GPIO_PIN_CNF_PULL_Disabled)
                                    << GPIO_PIN_CNF_PULL_Pos |
                                (output ? GPIO_PIN_CNF_INPUT_Disconnect : GPIO_PIN_CNF_INPUT_Connect)
                                    << GPIO_PIN_CNF_INPUT_Pos;
-    }
-    else
-    {
-        NRF_P1->PIN_CNF[pin] = (output ? GPIO_PIN_CNF_DIR_Output : GPIO_PIN_CNF_DIR_Input)
-                                   << GPIO_PIN_CNF_DIR_Pos |
-                               (pullup ? GPIO_PIN_CNF_PULL_Pullup : GPIO_PIN_CNF_PULL_Disabled)
-                                   << GPIO_PIN_CNF_PULL_Pos |
-                               (output ? GPIO_PIN_CNF_INPUT_Disconnect : GPIO_PIN_CNF_INPUT_Connect)
-                                   << GPIO_PIN_CNF_INPUT_Pos;
-    }
 }
 
 // Sets the value of the given port and pin to either HIGH or LOW
-void uDigitalWrite(int port, int pin, int value)
+
+void uDigitalWrite(MicrobitPin pin, int value)
 {
-    if (port == 0)
-    {
-        if (value)
-        {
-            NRF_P0->OUT |= (1 << pin);
-        }
-        else
-        {
-            NRF_P0->OUT &= ~(1 << pin);
-        }
-    }
+    NRF_GPIO_Type *port = (pin >= P1_0) ? NRF_P1 : NRF_P0;
+    int pinNumber = (pin >= P1_0) ? (pin - P1_0) : pin;
+
+    if (value)
+        port->OUT |= (1 << pinNumber);
     else
-    {
-        if (value)
-        {
-            NRF_P1->OUT |= (1 << pin);
-        }
-        else
-        {
-            NRF_P1->OUT &= ~(1 << pin);
-        }
-    }
+        port->OUT &= ~(1 << pinNumber);
 }
 // ####################################################################
 
@@ -359,24 +336,24 @@ void uDigitalWrite(int port, int pin, int value)
 // Print to serial
 void serialPrint(char *string)
 {
-    setPinDir(TX_PORT, TX_PIN, true, false);
+    setPinDir(TX_PIN, true, false);
     while (*string != '\0')
     {
         char current = *string++;
         // Start bit
-        uDigitalWrite(TX_PORT, TX_PIN, 0);
+        uDigitalWrite(TX_PIN, 0);
         uDelayU(SERIAL_INTERVAL);
 
         // Data bits (8 bits, LSB first)
         for (int i = 0; i < 8; i++)
         {
-            uDigitalWrite(TX_PORT, TX_PIN, current & 1);
+            uDigitalWrite(TX_PIN, current & 1);
             current >>= 1;
             uDelayU(SERIAL_INTERVAL);
         }
 
         // Stop bit
-        uDigitalWrite(TX_PORT, TX_PIN, 1);
+        uDigitalWrite(TX_PIN, 1);
         uDelayU(SERIAL_INTERVAL);
     }
 }
@@ -431,22 +408,22 @@ void displayRefresh()
     for (int col = 0; col < DISPLAY_WIDTH; col++)
     {
         // Set the current column pin to LOW
-        uDigitalWrite(MICROBIT_PINS.pins[col].port, MICROBIT_PINS.pins[col].pin,
+        uDigitalWrite(MICROBIT_PINS.pins[col],
                       LOW);
 
         // Set the row pins based on the display matrix
         for (int row = 0; row < DISPLAY_HEIGHT; row++)
         {
-            uDigitalWrite(MICROBIT_PINS.pins[row + DISPLAY_WIDTH].port,
-                          MICROBIT_PINS.pins[row + DISPLAY_WIDTH].pin,
-                          display[row][col]);
+            uDigitalWrite(
+                MICROBIT_PINS.pins[row + DISPLAY_WIDTH],
+                display[row][col]);
         }
 
         // Small delay to allow the column to be displayed
         uDelayM(1);
 
         // Set the current column pin back to HIGH
-        uDigitalWrite(MICROBIT_PINS.pins[col].port, MICROBIT_PINS.pins[col].pin,
+        uDigitalWrite(MICROBIT_PINS.pins[col],
                       HIGH);
     }
 }
@@ -479,7 +456,7 @@ void initialiseDisplay()
 {
     for (int i = 0; i < 10; i++)
     {
-        setPinDir(MICROBIT_PINS.pins[i].port, MICROBIT_PINS.pins[i].pin, OUTPUT, false);
+        setPinDir(MICROBIT_PINS.pins[i], OUTPUT, false);
     }
     clearDisplay();
     /// Configure the refresh timer
