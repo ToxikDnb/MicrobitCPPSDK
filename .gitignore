@@ -1,0 +1,7 @@
+.pio
+.vscode
+Documents/Schematics
+test
+*/README
+platformio.ini
+src
