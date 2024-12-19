@@ -26,6 +26,7 @@ MicrobitDisplay display = {{0, 0, 0, 0, 0},
                            {0, 0, 0, 0, 0},
                            {0, 0, 0, 0, 0}};
 const MicrobitMatrixPins MICROBIT_PINS;
+bool isSerialInitialised = false;
 volatile uint32_t *GPIO_0 = (uint32_t *)0x50000000;
 volatile uint32_t *GPIO_1 = (uint32_t *)0x50000300;
 
@@ -318,7 +319,6 @@ void setPin(MicrobitPin pin, bool output, bool pullup)
 }
 
 // Sets the value of the given port and pin to either HIGH or LOW
-
 void digitalWrite(MicrobitPin pin, int value)
 {
     NRF_GPIO_Type *port = (pin >= P1_0) ? NRF_P1 : NRF_P0;
@@ -329,32 +329,57 @@ void digitalWrite(MicrobitPin pin, int value)
     else
         port->OUT &= ~(1 << pinNumber);
 }
+
+// Reads the value of the given pin
+bool digitalRead(MicrobitPin pin)
+{
+    NRF_GPIO_Type *port = (pin >= P1_0) ? NRF_P1 : NRF_P0;
+    int pinNumber = (pin >= P1_0) ? (pin - P1_0) : pin;
+
+    return (port->IN >> pinNumber) & 1;
+}
 // ####################################################################
 
 // SERIAL FUNCTIONS
 // ####################################################################
-// Print to serial
+// Internal function to initialise the serial
+void initialiseSerial()
+{
+    setPin(MICROBIT_PIN_TX, true, false);
+    setPin(MICROBIT_PIN_RX, false, false);
+
+    NRF_UART0->PSEL.TXD = MICROBIT_PIN_TX;
+    NRF_UART0->PSEL.RXD = MICROBIT_PIN_RX;
+    NRF_UART0->BAUDRATE = SERIAL_SPEED;
+    NRF_UART0->CONFIG = (UART_CONFIG_HWFC_Disabled << UART_CONFIG_HWFC_Pos) |
+                        (UART_CONFIG_PARITY_Excluded << UART_CONFIG_PARITY_Pos);
+    NRF_UART0->ENABLE = UART_ENABLE_ENABLE_Enabled;
+
+    NRF_UART0->TASKS_STARTTX = 1;
+    NRF_UART0->TASKS_STARTRX = 1;
+
+    isSerialInitialised = true;
+}
+
+// Printing
+
+// Serial print a single character
+void serialPrint(char c)
+{
+    if (!isSerialInitialised)
+        initialiseSerial();
+    NRF_UART0->TXD = c;
+    while (NRF_UART0->EVENTS_TXDRDY != 1)
+        ;
+    NRF_UART0->EVENTS_TXDRDY = 0;
+}
+
+// Serial print a string
 void serialPrint(char *string)
 {
-    setPin(TX_PIN, true, false);
-    while (*string != '\0')
+    while (*string)
     {
-        char current = *string++;
-        // Start bit
-        digitalWrite(TX_PIN, 0);
-        delayU(SERIAL_INTERVAL);
-
-        // Data bits (8 bits, LSB first)
-        for (int i = 0; i < 8; i++)
-        {
-            digitalWrite(TX_PIN, current & 1);
-            current >>= 1;
-            delayU(SERIAL_INTERVAL);
-        }
-
-        // Stop bit
-        digitalWrite(TX_PIN, 1);
-        delayU(SERIAL_INTERVAL);
+        serialPrint(*string++);
     }
 }
 
@@ -507,6 +532,43 @@ void displayImage(MicrobitImage *image)
 
 // Sets the value of the pixel at the given x and y coordinates
 void setPixel(int x, int y, int value) { display[x][y] = value; }
+// ####################################################################
+
+// BUTTON FUNCTIONS
+// ####################################################################
+// Function to check if button A is pressed
+bool getButtonA()
+{
+    return digitalRead(BUTTONA) != HIGH;
+}
+
+// Function to check if button B is pressed
+bool getButtonB()
+{
+    return digitalRead(BUTTONB) != HIGH;
+}
+
+// Function to check if a ring is pressed
+bool getRing(uint8_t ringNum)
+{
+    MicrobitPin ringPin;
+    switch (ringNum)
+    {
+    case 0:
+        ringPin = GPIO_RING0_PIN;
+        break;
+    case 1:
+        ringPin = GPIO_RING1_PIN;
+        break;
+    case 2:
+        ringPin = GPIO_RING2_PIN;
+        break;
+    default:
+        serialPrint("Invalid ring number\n");
+        return false;
+    }
+    return digitalRead(ringPin) != HIGH;
+}
 // ####################################################################
 
 // MAIN FUNCTIONS

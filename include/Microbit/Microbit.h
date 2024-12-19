@@ -195,22 +195,24 @@ typedef enum
     NC = (int)0xFFFFFFFF
 } MicrobitPin;
 
-#define GPIO_MIC_PIN 20
+#define GPIO_MIC_PIN P0_20
+#define GPIO_RING0_PIN P0_02
+#define GPIO_RING1_PIN P0_03
+#define GPIO_RING2_PIN P0_04
 #define MICROBIT_PIN_INT_SCL P0_08
 #define MICROBIT_PIN_INT_SDA P0_16
 #define MICROBIT_PIN_EXT_SCL P0_26
 #define MICROBIT_PIN_EXT_SDA P1_01
+#define MICROBIT_PIN_TX P0_06
+#define MICROBIT_PIN_RX P1_08
 
 // OTHERS
 #define DISPLAY_WIDTH 5
 #define DISPLAY_HEIGHT 5
-#define SERIAL_SPEED 9600
-#define SERIAL_INTERVAL (1000000 / SERIAL_SPEED)
+#define SERIAL_SPEED UART_BAUDRATE_BAUDRATE_Baud115200
 #define REFRESH_RATE 60
 #define REFRESH_INTERVAL_MS 1000 / REFRESH_RATE
 #define REFRESH_INTERVAL_US 1000000 / REFRESH_RATE
-#define TX_PORT P0_00
-#define TX_PIN P0_06
 #define MICROBIT_DISPLAY_TIMER ((NRF_TIMER_Type *)0x4000A000UL) // Timer 2
 #define DELAY_TIMER ((NRF_TIMER_Type *)0x4001A000UL)            // Timer 3
 
@@ -300,6 +302,7 @@ void setPin(MicrobitPin pin, bool output, bool pullup);
 void digitalWrite(MicrobitPin pin, int value);
 
 // Serial print functions
+void serialPrint(char c);
 void serialPrint(char *string);
 void serialPrint(const char *string);
 void serialPrint(int x);
@@ -311,5 +314,10 @@ void clearDisplay();
 void pushImageToBuffer(MicrobitImage *image, int msToDisplay);
 void displayImage(MicrobitImage *image);
 void setPixel(int x, int y, int value);
+
+// Button functions
+bool getButtonA();
+bool getButtonB();
+bool getRing(uint8_t ringNum);
 
 #endif
