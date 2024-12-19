@@ -21,8 +21,44 @@ typedef struct vector2
     uint32_t y;
 } vector2;
 
+typedef enum direction
+{
+    UP = 0,
+    DOWN = 1,
+    LEFT = 2,
+    RIGHT = 3
+} direction;
+
+typedef enum cancelMode
+{
+    NEITHER_WIN,   // Default, Pressing opposite directions will cancel each other out
+    POSITIVE_WINS, // Pressing opposite directions will result in the positive direction being chosen
+    NEGATIVE_WINS, // Pressing opposite directions will result in the negative direction being chosen
+    BOTH_WIN       // Pressing opposite directions will result in both directions being chosen
+} cancelMode;
+
 // Classes
 // Hardware
+
+// Inputs
+
+class dPad
+{
+private:
+    MicrobitPin upPin;
+    MicrobitPin downPin;
+    MicrobitPin leftPin;
+    MicrobitPin rightPin;
+    cancelMode mode;
+public:
+    dPad(MicrobitPin upPin, MicrobitPin downPin, MicrobitPin leftPin, MicrobitPin rightPin, cancelMode mode = NEITHER_WIN);
+    ~dPad();
+
+    direction getDirection();
+    vector2 getDirectionVector();
+    bool isPressed();
+};
+
 // Displays
 class Display
 {
