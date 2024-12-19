@@ -271,18 +271,6 @@ typedef struct buffer
     bufferNode *head;
 } buffer;
 
-// Linked list for delay timer buffers
-typedef struct delayNode
-{
-    uint32_t usToDelay;
-    struct delayNode *next;
-} delayNode;
-
-typedef struct delayBuffer
-{
-    delayNode *head;
-} delayBuffer;
-
 // Function prototypes
 // General functions
 char *itoa(int value, char *str, int base);
@@ -319,5 +307,7 @@ void setPixel(int x, int y, int value);
 bool getButtonA();
 bool getButtonB();
 bool getRing(uint8_t ringNum);
+
+extern "C" void TIMER3_IRQHandler();
 
 #endif

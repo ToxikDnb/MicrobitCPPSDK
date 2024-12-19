@@ -27,6 +27,7 @@ MicrobitDisplay display = {{0, 0, 0, 0, 0},
                            {0, 0, 0, 0, 0}};
 const MicrobitMatrixPins MICROBIT_PINS;
 bool isSerialInitialised = false;
+bool isDelayTimerInitialised = false;
 volatile uint32_t *GPIO_0 = (uint32_t *)0x50000000;
 volatile uint32_t *GPIO_1 = (uint32_t *)0x50000300;
 
@@ -35,7 +36,6 @@ volatile uint32_t *GPIO_1 = (uint32_t *)0x50000300;
 buffer displayBuffer = {0};
 
 // Delays
-volatile delayBuffer dBuffer = {0};
 volatile bool isDelay = false;
 // ####################################################################
 
@@ -169,42 +169,6 @@ char *constToChars(const char *string)
     return buffer;
 }
 
-// Adds a delay to the delay buffer
-void addDelayToBuffer(uint32_t us)
-{
-    delayNode *newNode = (delayNode *)malloc(sizeof(delayNode));
-    newNode->usToDelay = us;
-    newNode->next = NULL;
-
-    if (dBuffer.head == NULL)
-    {
-        dBuffer.head = newNode;
-    }
-    else
-    {
-        delayNode *current = dBuffer.head;
-        while (current->next != NULL)
-        {
-            current = current->next;
-        }
-        current->next = newNode;
-    }
-}
-
-// Pops a delay from the delay buffer
-uint32_t getDelayFromBuffer()
-{
-    if (dBuffer.head == NULL)
-    {
-        return 0;
-    }
-    delayNode *temp = dBuffer.head;
-    dBuffer.head = dBuffer.head->next;
-    uint32_t delay = temp->usToDelay;
-    free(temp);
-    return delay;
-}
-
 // Pushes an image to the display buffer
 void pushImageToBuffer(MicrobitImage *image, int msToDisplay)
 {
@@ -241,6 +205,23 @@ bufferNode *popImageFromBuffer()
 }
 // ####################################################################
 
+// Internal function for initialising the timer
+void initialiseDelayTimer()
+{
+    // Enable TIMER3 peripheral
+    DELAY_TIMER->TASKS_STOP = 1;
+    DELAY_TIMER->TASKS_CLEAR = 1;
+    DELAY_TIMER->MODE = TIMER_MODE_MODE_Timer;
+    DELAY_TIMER->BITMODE = TIMER_BITMODE_BITMODE_32Bit;
+    DELAY_TIMER->INTENSET = TIMER_INTENSET_COMPARE0_Msk;
+    DELAY_TIMER->PRESCALER = 4; // 16MHz/2^4 = 1MHz (1us resolution)
+
+    // Configure interrupt
+    NVIC_SetPriority(TIMER3_IRQn, 1);
+    NVIC_EnableIRQ(TIMER3_IRQn);
+    isDelayTimerInitialised = true;
+}
+
 // DELAYS
 // ####################################################################
 // Delay function in seconds
@@ -262,7 +243,6 @@ extern "C" void TIMER3_IRQHandler()
     {
         DELAY_TIMER->EVENTS_COMPARE[0] = 0;
         DELAY_TIMER->TASKS_STOP = 1;
-        DELAY_TIMER->EVENTS_COMPARE[0] = 0;
         isDelay = false;
     }
 }
@@ -271,33 +251,23 @@ extern "C" void TIMER3_IRQHandler()
 void delayU(uint32_t us)
 {
     // Add current timer delay and position to buffer
-    if (DELAY_TIMER->TASKS_START == 1)
-    {
-        addDelayToBuffer(DELAY_TIMER->CC[0]);
-        DELAY_TIMER->TASKS_STOP = 1;
-    }
-    // Configure timer
-    DELAY_TIMER->BITMODE = TIMER_BITMODE_BITMODE_32Bit;
-    DELAY_TIMER->PRESCALER = 4;
-    DELAY_TIMER->TASKS_CLEAR = 1;
+    // Configure timer if not initialised
+    if (!isDelayTimerInitialised)
+        initialiseDelayTimer();
     // Set compare register
+    DELAY_TIMER->TASKS_STOP = 1;
+    DELAY_TIMER->TASKS_CLEAR = 1;
     DELAY_TIMER->CC[0] = us;
-    // Enable and configure interrupts
-    DELAY_TIMER->INTENSET = TIMER_INTENSET_COMPARE0_Msk;
-    NVIC_DisableIRQ(TIMER3_IRQn);
+
     NVIC_ClearPendingIRQ(TIMER3_IRQn);
-    NVIC_SetPriority(TIMER3_IRQn, 3);
-    NVIC_EnableIRQ(TIMER3_IRQn);
+
     // Start timer
     isDelay = true;
     DELAY_TIMER->TASKS_START = 1;
+
     while (isDelay)
-        ;
-    // Get next delay from buffer
-    uint32_t nextDelay = getDelayFromBuffer();
-    if (nextDelay != 0)
     {
-        delayU(nextDelay);
+        __WFI();
     }
 }
 // ####################################################################
@@ -497,11 +467,10 @@ void initialiseDisplay()
     MICROBIT_DISPLAY_TIMER->PRESCALER = 4;
     MICROBIT_DISPLAY_TIMER->CC[0] = REFRESH_INTERVAL_US;
     MICROBIT_DISPLAY_TIMER->INTENSET = TIMER_INTENSET_COMPARE0_Msk;
-    MICROBIT_DISPLAY_TIMER->SHORTS = TIMER_SHORTS_COMPARE0_CLEAR_Msk;
     // Map the timer to the interrupt function and start the timer
     NVIC_DisableIRQ(TIMER2_IRQn);
     NVIC_ClearPendingIRQ(TIMER2_IRQn);
-    NVIC_SetPriority(TIMER2_IRQn, 100);
+    NVIC_SetPriority(TIMER2_IRQn, 4);
     NVIC_EnableIRQ(TIMER2_IRQn);
     MICROBIT_DISPLAY_TIMER->TASKS_START = 1;
 }
