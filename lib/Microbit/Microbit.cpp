@@ -1,6 +1,4 @@
 #include <Microbit/Microbit.h>
-#include <stdlib.h>
-#include <nrf.h>
 
 /*
 Microbit API for the nRF52 microcontroller
