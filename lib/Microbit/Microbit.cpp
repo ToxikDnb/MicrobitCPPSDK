@@ -26,6 +26,7 @@ MicrobitDisplay display = {{0, 0, 0, 0, 0},
 const MicrobitMatrixPins MICROBIT_PINS;
 bool isSerialInitialised = false;
 bool isDelayTimerInitialised = false;
+bool isAccelerometerInitialised = false;
 volatile uint32_t *GPIO_0 = (uint32_t *)0x50000000;
 volatile uint32_t *GPIO_1 = (uint32_t *)0x50000300;
 
@@ -151,6 +152,30 @@ char *ultoa(unsigned long value, char *str, int base)
         *ptr-- = tmp;
     }
     return rc;
+}
+
+// Capitalises a character
+char capitalise(char c)
+{
+    if (c >= 'a' && c <= 'z')
+        return c - 32;
+    return c;
+}
+
+// Clamps a value between a min and max
+int clamp(int x, int min, int max)
+{
+    if (x < min)
+        return min;
+    if (x > max)
+        return max;
+    return x;
+}
+
+// Maps a value from one range to another
+int map(int x, int minIn, int maxIn, int minOut, int maxOut)
+{
+    return (x - minIn) * (maxOut - minOut) / (maxIn - minIn) + minOut;
 }
 
 // Generates a random number between min and max
@@ -536,6 +561,53 @@ bool getRing(uint8_t ringNum)
     }
     return digitalRead(ringPin) != HIGH;
 }
+// ####################################################################
+
+// Peripheral functions
+// ####################################################################
+// Accelerometer
+
+// internal accelerometer init
+void initialiseAccelerometer()
+{
+    if (isAccelerometerInitialised)
+        return;
+    isAccelerometerInitialised = true;
+    initialiseInternalI2C(ACCELEROMETER_ADDRESS);
+    writeInternalI2C(ACCELEROMETER_REG_CTRL_REG1, ACCELEROMETER_MODE_BASIC);
+}
+
+// Function to get the accelerometer reading in raw values
+int16_t getAccelerometerRaw(char axis)
+{
+    initialiseAccelerometer();
+    axis = capitalise(axis);
+    if (axis != 'X' && axis != 'Y' && axis != 'Z')
+        return 0;
+    // calculate and read registers
+    uint8_t reg_low = ACCELEROMETER_REG_OUTPUT_X_L + (2 * (axis - 'X')), reg_high = reg_low + 1;
+    uint8_t low = readInternalI2C(reg_low);
+    uint8_t high = readInternalI2C(reg_high);
+    int16_t value = (high << 8) | low;
+
+    // Bit shift due to 10-bit resolution and 2's complement
+    value = value >> 5;
+
+    // If value is greater than 512, subtract 1024 due to 2's complement
+    if (value > 512)
+        value -= 1024;
+
+    return value;
+}
+
+// Function to get the accelerometer reading in degrees
+int16_t getAccelerometerDegrees(char axis)
+{
+    int16_t reading = getAccelerometerRaw(axis);
+    reading = clamp(reading, ACCELEROMETER_MIN, ACCELEROMETER_MAX);
+    return map(reading, ACCELEROMETER_MIN, ACCELEROMETER_MAX, 0, 360);
+}
+
 // ####################################################################
 
 // MAIN FUNCTIONS

@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <nrf.h>
 #include <string.h>
+#include <Microbit/I2C.h>
 
 // Macros
 
@@ -216,6 +217,15 @@ typedef enum
 #define MICROBIT_DISPLAY_TIMER ((NRF_TIMER_Type *)0x4000A000UL) // Timer 2
 #define DELAY_TIMER ((NRF_TIMER_Type *)0x4001A000UL)            // Timer 3
 
+// PERIPHERAL MACROS
+// ACCELEROMETER
+#define ACCELEROMETER_MIN -512
+#define ACCELEROMETER_MAX 512
+#define ACCELEROMETER_ADDRESS 0x19
+#define ACCELEROMETER_REG_CTRL_REG1 0x20
+#define ACCELEROMETER_REG_OUTPUT_X_L 0x28
+#define ACCELEROMETER_MODE_BASIC 0x57
+
 #ifndef INPUT
 #define INPUT 0
 #endif
@@ -272,6 +282,7 @@ typedef struct buffer
 } buffer;
 
 // Function prototypes
+
 // General functions
 char *itoa(int value, char *str, int base);
 char *utoa(unsigned int value, char *str, int base);
@@ -279,6 +290,9 @@ char *ltoa(long value, char *str, int base);
 char *ultoa(unsigned long value, char *str, int base);
 int randint(int32_t min, int32_t max);
 char *constToChars(const char *string);
+char capitalise(char c);
+int clamp(int x, int min, int max);
+int map(int x, int inMin, int inMax, int outMin, int outMax);
 
 // Low level delay functions
 void delayS(uint32_t s);
@@ -307,6 +321,13 @@ void setPixel(int x, int y, int value);
 bool getButtonA();
 bool getButtonB();
 bool getRing(uint8_t ringNum);
+
+// Peripherals
+
+// Accelerometer functions
+int16_t getAccelerometerDegrees(char axis);
+int16_t getAccelerometerRaw(char axis);
+void calibrateAccelerometer();
 
 extern "C" void TIMER3_IRQHandler();
 
