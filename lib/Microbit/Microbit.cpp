@@ -178,7 +178,7 @@ int map(int x, int minIn, int maxIn, int minOut, int maxOut)
     return (x - minIn) * (maxOut - minOut) / (maxIn - minIn) + minOut;
 }
 
-// Generates a random number between min and max
+// Generates a random number between min (inclusive) and max (inclusive)
 int randint(int32_t min, int32_t max)
 {
     return rand() % (max - min + 1) + min;
