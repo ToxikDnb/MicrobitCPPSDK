@@ -8,21 +8,21 @@ This C++ SDK is designed specifically with the BBC MicroBit in mind. It acts as 
 
 Implemented/Implementing:
 
-- GPIO Control
-- Display Management
-- Timing Functions
-- Input Handling
-- Communication
-- Display Abstraction
-- Sprite System
-- Input System
+-   GPIO Control
+-   Display Management
+-   Timing Functions
+-   Input Handling
+-   Communication
+-   Display Abstraction
+-   Sprite System
+-   Input System
 
 Planned:
 
-- Animation System
-- Game State Management
-- Sensor Integration
-- Sound System
+-   Animation System
+-   Game State Management
+-   Sensor Integration
+-   Sound System
 
 ## Installation
 
@@ -32,8 +32,8 @@ The following libraries are needed for each file:
 
 #### Microbit.h
 
-- C++ standard library
-- `nrf.h`: Nordic Semiconductor nRF5 SDK.
+-   C++ standard library
+-   `nrf.h`: Nordic Semiconductor nRF5 SDK.
 
 ### Steps
 
@@ -100,23 +100,37 @@ void loop()
     if (counter >= counterMax)
         counter = 0;
 }
-
-
 ```
+
+### Advanced Examples
+
+Please find the "Examples" folder which contains a variety of example projects, displaying the functionality of the SDK
+
+The current example projects available are:
+
+-   Nom Nom
+
+#### Nom Nom
+
+This game is a simple game where the player has to eat the food particles that appears on the screen
+The player controls their character via the integrated accelerometer
+Once the player has eaten a piece of food, the food will disappear and reappear in a new location
+After eating ten pieces of food, the player wins and a victory screen is displayed!
+This game only uses 236 bytes of RAM and 3.4KB of rom, designed to show how both lightweight, readable and powerful the base SDK is
 
 ## API Reference
 
 ### Microbit.h
 
-- Contains the basic functionality of the MicroBit, allowing for interaction with all of its internal peripherals and functions
+-   Contains the basic functionality of the MicroBit, allowing for interaction with all of its internal peripherals and functions
 
 ### UGame.h
 
-- Contains the game development engine and support for custom IO systems.
+-   Contains the game development engine and support for custom IO systems.
 
 ### I2C.h
 
-- Contains logic for communicating over I2C
+-   Contains logic for communicating over I2C
 
 ## License
 
