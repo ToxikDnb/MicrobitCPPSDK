@@ -1,4 +1,4 @@
-#include <Microbit/I2C.h>
+#include <Microbit/Core/I2C.h>
 
 // Initialises the external I2C peripheral at the given address
 void initialiseExternalI2C(uint32_t address)

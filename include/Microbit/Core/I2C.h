@@ -1,7 +1,9 @@
 #ifndef I2C_H
 #define I2C_H
 
-#include <Microbit/Microbit.h>
+#include <Microbit/Core/Defs.h>
+#include <Microbit/Core/GPIO.h>
+#include <nrf.h>
 
 #define FREQUENCY TWI_FREQUENCY_FREQUENCY_K400
 

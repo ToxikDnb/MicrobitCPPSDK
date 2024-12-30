@@ -8,21 +8,21 @@ This C++ SDK is designed specifically with the BBC MicroBit in mind. It acts as 
 
 Implemented/Implementing:
 
--   GPIO Control
--   Display Management
--   Timing Functions
--   Input Handling
--   Communication
--   Display Abstraction
--   Sprite System
--   Input System
+- GPIO Control
+- Display Management
+- Timing Functions
+- Input Handling
+- Communication
+- Display Abstraction
+- Sprite System
+- Input System
 
 Planned:
 
--   Animation System
--   Game State Management
--   Sensor Integration
--   Sound System
+- Animation System
+- Game State Management
+- Sensor Integration
+- Sound System
 
 ## Installation
 
@@ -32,8 +32,8 @@ The following libraries are needed for each file:
 
 #### Microbit.h
 
--   C++ standard library
--   `nrf.h`: Nordic Semiconductor nRF5 SDK.
+- C++ standard library
+- `nrf.h`: Nordic Semiconductor nRF5 SDK.
 
 ### Steps
 
@@ -108,7 +108,7 @@ Please find the "Examples" folder which contains a variety of example projects, 
 
 The current example projects available are:
 
--   Nom Nom
+- Nom Nom
 
 #### Nom Nom
 
@@ -122,15 +122,15 @@ This game only uses 236 bytes of RAM and 3.4KB of rom, designed to show how both
 
 ### Microbit.h
 
--   Contains the basic functionality of the MicroBit, allowing for interaction with all of its internal peripherals and functions
+- Contains the basic functionality of the MicroBit, allowing for interaction with all of its internal peripherals and functions
 
 ### UGame.h
 
--   Contains the game development engine and support for custom IO systems.
+- Contains the game development engine and support for custom IO systems.
 
 ### I2C.h
 
--   Contains logic for communicating over I2C
+- Contains logic for communicating over I2C
 
 ## License
 
