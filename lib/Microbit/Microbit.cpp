@@ -15,10 +15,8 @@ Please see the Readme or the github markdown for instructions on how to use this
 
 */
 
-// MAIN FUNCTIONS
-// ####################################################################
-extern void setup(); // Override this function in your main file for setup
-extern void loop();  // Override this function in your main file for the main loop
+extern void setup(); // Implement this function in your main file for setup
+extern void loop();  // Implement this function in your main file for the main loop
 
 // Main function
 int main()
@@ -29,4 +27,3 @@ int main()
         loop();
     }
 }
-// ####################################################################
