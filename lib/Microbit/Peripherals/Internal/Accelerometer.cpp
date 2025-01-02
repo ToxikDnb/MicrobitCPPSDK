@@ -1,5 +1,6 @@
 #include <Microbit/Peripherals/Internal/Accelerometer.h>
 
+// Global variables
 bool isAccelerometerInitialised = false;
 
 void initialiseAccelerometer()

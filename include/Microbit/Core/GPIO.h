@@ -1,9 +1,24 @@
 #ifndef GPIO_H
 #define GPIO_H
 
+/**
+ * @file GPIO.h
+ * @author Mackenzie Blackaby (mackenzie@blackaby.uk)
+ * @brief This module contains functionality for working directly with GPIO pin states.
+ * This is used in many other modules, but can also be used for custom hardware configurations
+ * over GPIO
+ * @version 0.1
+ * @date 2025-01-02
+ *
+ * @copyright Copyright (c) 2025
+ *
+ */
+
+// Includes
 #include <nrf.h>
 
-// Pin typedef enum
+// Typedefs
+// Enums
 typedef enum
 {
     p0 = 0,
@@ -188,7 +203,7 @@ typedef enum
     NC = (int)0xFFFFFFFF
 } MicrobitPin;
 
-// MACROS
+// Macros (Updated continuously)
 #define GPIO_MIC_PIN P0_20
 #define GPIO_RING0_PIN P0_02
 #define GPIO_RING1_PIN P0_03

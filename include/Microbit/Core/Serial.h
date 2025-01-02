@@ -1,6 +1,17 @@
 #ifndef SERIAL_H
 #define SERIAL_H
 
+/**
+ * @file Serial.h
+ * @author Mackenzie Blackaby (mackenzie@blackaby.uk)
+ * @brief This module contains functions for USB serial communication. Currently only output, Input is coming soon :)
+ * @version 0.1
+ * @date 2025-01-02
+ *
+ * @copyright Copyright (c) 2025
+ *
+ */
+
 #include <Microbit/Core/GPIO.h>
 #include <Microbit/Core/Maths.h>
 

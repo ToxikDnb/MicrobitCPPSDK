@@ -1,6 +1,9 @@
 #include <Microbit/Core/GPIO.h>
 
-// Sets the Pin Direction to either INPUT or OUTPUT for the given port and pin
+/* 
+Sets the given pin Direction to either INPUT or OUTPUT for the given port and pin
+Also contains options for enabling pullup resistors (IE for buttons)
+*/
 void setPin(MicrobitPin pin, bool output, bool pullup)
 {
     NRF_GPIO_Type *port = (pin >= P1_0) ? NRF_P1 : NRF_P0;
@@ -14,7 +17,7 @@ void setPin(MicrobitPin pin, bool output, bool pullup)
                                    << GPIO_PIN_CNF_INPUT_Pos;
 }
 
-// Sets the value of the given port and pin to either HIGH or LOW
+// Writes a binary value to the given pin
 void digitalWrite(MicrobitPin pin, int value)
 {
     NRF_GPIO_Type *port = (pin >= P1_0) ? NRF_P1 : NRF_P0;
@@ -26,7 +29,7 @@ void digitalWrite(MicrobitPin pin, int value)
         port->OUT &= ~(1 << pinNumber);
 }
 
-// Reads the value of the given pin
+// Reads a binary value from the given pin
 bool digitalRead(MicrobitPin pin)
 {
     NRF_GPIO_Type *port = (pin >= P1_0) ? NRF_P1 : NRF_P0;

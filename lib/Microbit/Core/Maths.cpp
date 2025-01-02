@@ -1,6 +1,9 @@
 #include <Microbit/Core/Maths.h>
 
-// Helper functions for number to string conversion
+/*
+Converts an integer to a string, with a given base.
+This function is based on the itoa function in the C standard library,
+*/
 char *itoa(int value, char *str, int base)
 {
     if (base < 2 || base > 36)
@@ -31,6 +34,10 @@ char *itoa(int value, char *str, int base)
     return rc;
 }
 
+/*
+Converts an unsigned integer to a string with a given base.
+This function is based on the utoa function in the C standard library.
+*/
 char *utoa(unsigned int value, char *str, int base)
 {
     if (base < 2 || base > 36)
@@ -57,6 +64,10 @@ char *utoa(unsigned int value, char *str, int base)
     return rc;
 }
 
+/*
+Converts a long to a string with a given base.
+This function is based on the ltoa function in the C standard library.
+*/
 char *ltoa(long value, char *str, int base)
 {
     if (base < 2 || base > 36)
@@ -87,6 +98,10 @@ char *ltoa(long value, char *str, int base)
     return rc;
 }
 
+/*
+Converts an unsigned long to a string with a given base.
+This function is based on the ultoa function in the C standard library.
+*/
 char *ultoa(unsigned long value, char *str, int base)
 {
     if (base < 2 || base > 36)
@@ -113,7 +128,7 @@ char *ultoa(unsigned long value, char *str, int base)
     return rc;
 }
 
-// Capitalises a character
+// Capitalises a character. Returns the character if it is not a lowercase letter
 char capitalise(char c)
 {
     if (c >= 'a' && c <= 'z')
@@ -121,7 +136,7 @@ char capitalise(char c)
     return c;
 }
 
-// Clamps a value between a min and max
+// Clamps an integer value between a given min and max
 int clamp(int x, int min, int max)
 {
     if (x < min)
@@ -131,7 +146,7 @@ int clamp(int x, int min, int max)
     return x;
 }
 
-// Maps a value from one range to another
+// Maps a given integer value from one range to another
 int map(int x, int minIn, int maxIn, int minOut, int maxOut)
 {
     return (x - minIn) * (maxOut - minOut) / (maxIn - minIn) + minOut;
@@ -143,7 +158,10 @@ int randint(int32_t min, int32_t max)
     return rand() % (max - min + 1) + min;
 }
 
-// Converts a const char array to a char array. WARNING: This function uses malloc, so remember to free the buffer
+/*
+Converts a const char array to a char array.
+WARNING: This function uses malloc, so remember to free the buffer
+*/
 char *constToChars(const char *string)
 {
     char *buffer = (char *)malloc(strlen(string) + 1);

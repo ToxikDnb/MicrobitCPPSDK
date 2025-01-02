@@ -1,13 +1,25 @@
 #ifndef MATRIX_DISPLAY_H
 #define MATRIX_DISPLAY_H
 
+/**
+ * @file MatrixDisplay.h
+ * @author Mackenzie Blackaby (mackenzie@blackaby.uk)
+ * @brief Provides functions to access the in-built 5x5 LED matrix display on the Microbit
+ * @version 0.1
+ * @date 2025-01-02
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
+
+// Includes
 #include <Microbit/Core/GPIO.h>
 #include <Microbit/Core/Serial.h>
 #include <Microbit/Core/Defs.h>
 #include <Microbit/Core/Delays.h>
 #include <stdlib.h>
 
-// MACROS
+// Macros
 #define DISPLAY_WIDTH 5
 #define DISPLAY_HEIGHT 5
 #define SERIAL_SPEED UART_BAUDRATE_BAUDRATE_Baud115200
@@ -16,7 +28,7 @@
 #define REFRESH_INTERVAL_US 1000000 / REFRESH_RATE
 #define MICROBIT_DISPLAY_TIMER ((NRF_TIMER_Type *)0x4000A000UL) // Timer 2
 
-// typedefs
+// Typedefs
 typedef struct
 {
     MicrobitPin col1 = P0_28;
@@ -35,7 +47,6 @@ typedef struct
 
 } MicrobitMatrixPins;
 
-// Custom data types
 typedef uint8_t MicrobitDisplay[DISPLAY_HEIGHT][DISPLAY_WIDTH];
 typedef uint8_t MicrobitImage[DISPLAY_HEIGHT][DISPLAY_WIDTH];
 
@@ -58,8 +69,6 @@ void clearDisplay();
 void pushImageToBuffer(MicrobitImage *image, int msToDisplay);
 void displayImage(MicrobitImage *image);
 void setPixel(int x, int y, int value);
-
-// Serial functionss
 void serialPrintImage(MicrobitImage *image);
 
 #endif

@@ -1,5 +1,6 @@
 #include <Microbit/Core/Serial.h>
 
+// Global Variables
 bool isSerialInitialised = false;
 
 // Internal function to initialise the serial
@@ -21,9 +22,9 @@ void initialiseSerial()
     isSerialInitialised = true;
 }
 
-// Printing
+// OUTPUT FUNCTIONS:
 
-// Serial print a single character
+// Print a single character to serial
 void serialPrint(char c)
 {
     if (!isSerialInitialised)
@@ -34,7 +35,7 @@ void serialPrint(char c)
     NRF_UART0->EVENTS_TXDRDY = 0;
 }
 
-// Serial print a string
+// Print a string of characters to serial
 void serialPrint(char *string)
 {
     while (*string)
@@ -43,7 +44,7 @@ void serialPrint(char *string)
     }
 }
 
-// Same function but for a constant string
+// Print a constant string of characters to serial
 void serialPrint(const char *string)
 {
     char *buffer = constToChars(string);
@@ -51,7 +52,7 @@ void serialPrint(const char *string)
     free(buffer);
 }
 
-// Same function but for an integer
+// Print an integer to the serial
 void serialPrint(int x)
 {
     char buffer[32];

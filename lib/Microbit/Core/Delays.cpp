@@ -1,9 +1,10 @@
 #include <Microbit/Core/Delays.h>
 
+// Global Variables
 bool isDelayTimerInitialised = false;
 volatile bool isDelay = false;
 
-// Internal function for initialising the timer
+// Internal function for initialising the timer. Not intended to be used by users
 void initialiseDelayTimer()
 {
     // Enable TIMER3 peripheral
@@ -20,21 +21,20 @@ void initialiseDelayTimer()
     isDelayTimerInitialised = true;
 }
 
-// DELAYS
-// ####################################################################
-// Delay function in seconds
-void delayS(uint32_t s)
+// This function causes the MicroBit to pause for a specified amount of whole seconds.
+// TODO: Improve function safety by using looping for longer delays
+void delayS(uint32_t seconds)
 {
-    delayU(s * 1000000);
+    delayU(seconds * 1000000);
 }
 
-// Delay function in milliseconds
-void delayM(uint32_t ms)
+// This function causes the MicroBit to pause for a specified amount of whole milliseconds.
+void delayM(uint32_t milliseconds)
 {
-    delayU(ms * 1000);
+    delayU(milliseconds * 1000);
 }
 
-// Timer interrupt handler
+// Timer interrupt handler. Again, not intended for users.
 extern "C" void TIMER3_IRQHandler()
 {
     if (DELAY_TIMER->EVENTS_COMPARE[0] != 0)
@@ -45,8 +45,11 @@ extern "C" void TIMER3_IRQHandler()
     }
 }
 
-// Delay function in microseconds
-void delayU(uint32_t us)
+/*
+This function causes the MicroBit to pause for a specified amount of microseconds, and is the core of how the
+SDK calculates delays.
+*/
+void delayU(uint32_t microseconds)
 {
     // Add current timer delay and position to buffer
     // Configure timer if not initialised
@@ -55,7 +58,7 @@ void delayU(uint32_t us)
     // Set compare register
     DELAY_TIMER->TASKS_STOP = 1;
     DELAY_TIMER->TASKS_CLEAR = 1;
-    DELAY_TIMER->CC[0] = us;
+    DELAY_TIMER->CC[0] = microseconds;
 
     NVIC_ClearPendingIRQ(TIMER3_IRQn);
 
