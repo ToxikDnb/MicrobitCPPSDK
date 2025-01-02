@@ -6,7 +6,7 @@
  * @author Mackenzie Blackaby (mackenzie@blackaby.uk)
  * @brief This module contains functions to perform delays of multiple different timescales
  * and makes use of the in-built timer hardware
- * @version 0.1
+ * @version 0.2
  * @date 2025-01-02
  *
  * @copyright Copyright (c) 2025

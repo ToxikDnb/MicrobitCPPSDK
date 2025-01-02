@@ -25,13 +25,29 @@ void initialiseDelayTimer()
 // TODO: Improve function safety by using looping for longer delays
 void delayS(uint32_t seconds)
 {
-    delayU(seconds * 1000000);
+    while(seconds > 0){
+        if(seconds > MAX_SAFE_SECONDS){
+            delayU(MAX_SAFE_SECONDS * 1000000);
+            seconds -= MAX_SAFE_SECONDS;
+        } else {
+            delayU(seconds * 1000000);
+            seconds = 0;
+        }
+    }
 }
 
 // This function causes the MicroBit to pause for a specified amount of whole milliseconds.
 void delayM(uint32_t milliseconds)
 {
-    delayU(milliseconds * 1000);
+    while(milliseconds > 0){
+        if(milliseconds > MAX_SAFE_MILLISECONDS){
+            delayU(MAX_SAFE_MILLISECONDS * 1000);
+            milliseconds -= MAX_SAFE_MILLISECONDS;
+        } else {
+            delayU(milliseconds * 1000);
+            milliseconds = 0;
+        }
+    }
 }
 
 // Timer interrupt handler. Again, not intended for users.
