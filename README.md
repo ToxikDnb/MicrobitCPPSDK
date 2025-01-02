@@ -1,8 +1,12 @@
 # MicroBit C++ SDK
 
+---
+
 ## Introduction
 
 This C++ SDK is designed specifically with the BBC MicroBit in mind. It acts as an alternative to both the Arduino development package, which is not designed with the BBC MicroBit in mind rather as a highly functional general-purpose microcontroller development kit, and the Lancaster University SDK which, while having laser focus on the MicroBit, is not as user-friendly or intuitive as the Arduino package, and is not as compatible with development styles either.
+
+---
 
 ## Features
 
@@ -24,13 +28,13 @@ Planned:
 - Sensor Integration
 - Sound System
 
+---
+
 ## Installation
 
 ### Prerequisites
 
-The following libraries are needed for each file:
-
-#### Microbit.h
+The following libraries are needed for this SDK to function:
 
 - C++ standard library
 - `nrf.h`: Nordic Semiconductor nRF5 SDK.
@@ -46,6 +50,8 @@ The following libraries are needed for each file:
 5. Delete the following from your main.cpp file: `#include <"Arduino.h">`
 6. Include the core library `<"Microbit.h">` instead
 7. Good luck! :)
+
+---
 
 ## Usage
 
@@ -110,7 +116,7 @@ The current example projects available are:
 
 - Nom Nom
 
-#### Nom Nom
+### Nom Nom
 
 This game is a simple game where the player has to eat the food particles that appears on the screen
 The player controls their character via the integrated accelerometer
@@ -118,19 +124,75 @@ Once the player has eaten a piece of food, the food will disappear and reappear 
 After eating ten pieces of food, the player wins and a victory screen is displayed!
 This game only uses 236 bytes of RAM and 3.4KB of rom, designed to show how both lightweight, readable and powerful the base SDK is
 
+---
+
 ## API Reference
+
+---
+
+## SDKs
 
 ### Microbit.h
 
-- Contains the basic functionality of the MicroBit, allowing for interaction with all of its internal peripherals and functions
+- Contains the complete functionality of the MicroBit SDK, allowing for interaction with all of its internal peripherals and functions.
+- Suitable for most projects requiring hardware interfacing to build common applications
+
+### MicrobitLite.h
+
+- Contains a more lightweight version of the MicroBit SDK, with a focus on simplicity and ease of use.
+- Contains all core functionality, but with no peripheral support or serial communication
+- Suitable for simple projects or projects that require a more lightweight SDK or ones that do not use the MicroBit's internal peripherals
 
 ### UGame.h
 
 - Contains the game development engine and support for custom IO systems.
+- More complex dev kit designed specifically for games
 
-### I2C.h
+---
 
-- Contains logic for communicating over I2C
+## Modules
+
+### Peripherals
+
+#### Internal
+
+##### Accelerometer
+
+Contains functions for utilising the in-built accelerometer on the MicroBit
+
+##### Buttons
+
+Contains functions for utilising the in-built buttons and capacitive rings on the MicroBit
+
+##### MatrixDisplay
+
+Contains functions for controlling the LED matrix display on the MicroBit
+
+#### External
+
+---
+
+### Core
+
+#### Delays
+
+Contains functions for pausing for specified periods of seconds, milliseconds or microseconds.
+
+#### GPIO
+
+Contains functions for controlling the GPIO pins on the MicroBit
+
+#### I2C
+
+Contains logic for communicating over I2C
+
+#### Maths
+
+Contains common mathematical and logical functions for use in the SDK and user code
+
+#### Serial
+
+Contains logic for communicating over Serial
 
 ## License
 
